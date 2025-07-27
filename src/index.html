@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-   
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Keep</title>
@@ -16,10 +15,12 @@
       uses modern CSS features to create an adaptive grid for your notes.
     -->
     <link rel="stylesheet" href="style.css" />
-         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+    <!-- Import Bootstrap Icons for modern button icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
   </head>
-  
   <body>
     <header class="app-header">
       <h1>Simple Keep</h1>
@@ -29,10 +30,10 @@
         placeholder="Search notes…"
         aria-label="Search notes"
       />
-      <!-- Export/import buttons for backing up notes.  Users can download their data
-           and store it on a cloud provider of their choice (e.g., OneDrive or Google
-           Drive) and restore it later.  These controls offset hosting costs by
-           eliminating any need for a back‑end. -->
+      <!-- Export/import buttons for backing up notes.  Users can download 
+           their data and store it on a cloud provider of their choice (e.g., OneDrive 
+           or Google Drive) and restore it later.  These controls offset hosting costs
+           by eliminating any need for a back‑end. -->
       <button id="exportNotesBtn" class="secondary-btn" title="Export notes to file">
         Export
       </button>
@@ -41,6 +42,11 @@
       </button>
       <!-- hidden file input for importing JSON backups -->
       <input type="file" id="importFileInput" accept="application/json" style="display:none" />
+
+      <!-- Theme toggle button for switching between light and dark modes -->
+      <button id="themeToggleBtn" class="icon-btn" title="Toggle dark/light mode">
+        <!-- Icon will be set dynamically in script.js based on current theme -->
+      </button>
     </header>
 
     <!-- Note creation area -->
