@@ -1,0 +1,532 @@
+/*
+     * Stylesheet for Simple Keep
+     *
+     * This file defines the look and feel of the note‑taking
+     * application.  Care has been taken to keep the design
+     * lightweight and accessible while still being attractive.
+     */
+
+/* CSS reset to remove default margins and paddings */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Theme variables: define default (light) values.  Dark mode overrides are
+   defined at the bottom of the file within the .dark-mode selector. */
+:root {
+  --bg-color: #f5f5f5;
+  --text-color: #333;
+  --header-bg: #ffffff;
+  --header-border: #e0e0e0;
+  --input-bg: #ffffff;
+  --input-border: #ddd;
+  --primary-btn-bg: #1a73e8;
+  --primary-btn-color: #ffffff;
+  --primary-btn-hover: #155cb0;
+  --secondary-btn-bg: #e8eaed;
+  --secondary-btn-color: #333;
+  --secondary-btn-hover: #d7d9db;
+  --danger-btn-bg: #e53935;
+  --danger-btn-color: #ffffff;
+  --danger-btn-hover: #b61823;
+  --section-title-color: #5f6368;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.15);
+  --action-hover: rgba(0, 0, 0, 0.05);
+  --modal-bg: #ffffff;
+  --modal-border: #eee;
+  --backdrop-bg: rgba(0, 0, 0, 0.4);
+
+      /* Vibrant neon gradient colours used for the note creation area's border in light mode. */
+      /* These colours have been tuned to stand out more prominently than before. */
+      --input-gradient-start: #ff007a;
+      --input-gradient-end: #00eaff;
+      /* Colour used for interactive links such as the Read More indicator. */
+      --link-color: #1a73e8;
+}
+
+/* Layout for the header */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--header-bg);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid var(--header-border);
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  flex: 0 0 auto;
+}
+
+.app-header input[type='text'] {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Input section for creating notes */
+.note-input {
+      background-color: var(--input-bg);
+      margin: 2rem auto;
+      padding: 1rem;
+      border-radius: 5px;
+      /* Apply a colourful gradient border using CSS border-image.  The
+         transparent border allows the gradient to sit outside the box while
+         `border-image` paints the border with the gradient defined via
+         CSS variables. */
+      border: 1px solid transparent;
+      border-image: linear-gradient(45deg, var(--input-gradient-start), var(--input-gradient-end)) 1;
+      max-width: 800px;
+      /* Apply a more pronounced neon glow around the input area using both ends
+         of the gradient.  Multiple shadows layer together to create a colourful
+         halo effect. */
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      box-shadow: 0 0 10px rgba(255, 0, 122, 0.5), 0 0 20px rgba(0, 234, 255, 0.5);
+}
+
+.note-input .note-title,
+  .note-input .note-content {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+}
+
+/* Textarea specific styling */
+.note-input .note-content {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.4;
+}
+
+/* Options inside the note input area */
+.input-options {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.primary-btn,
+.secondary-btn,
+.danger-btn {
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.primary-btn {
+  background-color: var(--primary-btn-bg);
+  color: var(--primary-btn-color);
+}
+
+.primary-btn:hover {
+  background-color: var(--primary-btn-hover);
+}
+
+.secondary-btn {
+  background-color: var(--secondary-btn-bg);
+  color: var(--secondary-btn-color);
+}
+
+.secondary-btn:hover {
+  background-color: var(--secondary-btn-hover);
+}
+
+.danger-btn {
+  background-color: var(--danger-btn-bg);
+  color: var(--danger-btn-color);
+}
+
+.danger-btn:hover {
+  background-color: var(--danger-btn-hover);
+}
+
+/* Colour palette chooser */
+.color-options {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.color-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.color-btn:hover {
+  transform: scale(1.15);
+}
+
+/* Checklist container styles */
+.checklist-container {
+  list-style: none;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.checklist-container li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.checklist-container input[type='checkbox'] {
+  cursor: pointer;
+}
+
+.checklist-container input[type='text'] {
+  flex: 1;
+  padding: 0.25rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Sections for pinned and other notes */
+.notes-wrapper {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+  padding: 0 1rem;
+}
+
+.note-section {
+  margin-top: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--section-title-color);
+}
+
+/* Grid layout for notes */
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+/* Masonry-style wrapper using CSS Columns.  This allows note cards of varying
+   heights to flow naturally without leaving unsightly gaps.  Each column has
+   a fixed width and the browser fills as many columns as will fit in the
+   container.  The gap between columns matches the spacing used previously. */
+.masonry-wrap {
+  column-width: 260px;
+  column-gap: 0.75rem;
+}
+
+/* Individual note card */
+.note-card {
+  background-color: var(--card-bg);
+  border-radius: 6px;
+  /* Set explicit four‑value padding: top, right, bottom, left.  The left
+     padding is increased to leave space for the drag handle so that the
+     title text does not overlap the grip icon. */
+  padding: 0.75rem 0.75rem 0.75rem 1.75rem;
+  box-shadow: 0 1px 2px var(--card-shadow);
+  /* Use inline-flex so that note cards flow naturally within CSS columns.
+     inline-flex preserves the flexbox layout for the card's contents while
+     allowing the card itself to behave like an inline element. */
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  min-height: 80px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  /* Smooth transitions for hover and drag animations.  These rules apply to
+     both the translation and shadow of the note card. */
+  transition: transform 0.18s, box-shadow 0.18s;
+
+  /* The increased left padding above already reserves space for the drag
+     handle; remove the separate padding-left property. */
+}
+
+/* Slight lift and shadow on hover to provide visual feedback. */
+.note-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* When dragging a card, rotate and scale it slightly to indicate movement. */
+.dragging {
+  transform: rotate(2deg) scale(1.02);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* Removed the old ::before pin indicator.  The pin state is now
+   communicated via a button in the note actions. */
+
+.note-card .note-title-display {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.note-card .note-content-display {
+  flex: 1;
+}
+
+.note-card .note-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.note-card .note-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.note-card .note-list input[type='checkbox'] {
+  pointer-events: none; /* disable pointer on display mode */
+}
+
+/* Action buttons inside each note */
+.note-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.note-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+/* Style Bootstrap icons inside action buttons.  Increase the
+   icon size slightly and vertically align to match text baseline. */
+.note-actions button i {
+  font-size: 1.2rem;
+  vertical-align: middle;
+  /* Match icon colour to text colour so icons remain visible in dark mode */
+  color: var(--text-color);
+}
+
+.note-actions button:hover {
+  background-color: var(--action-hover);
+}
+
+/* Read More link appended to truncated notes */
+.read-more {
+  color: var(--link-color);
+  cursor: pointer;
+  font-weight: 500;
+}
+.read-more:hover {
+  text-decoration: underline;
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--backdrop-bg);
+}
+
+.modal-content {
+  position: relative;
+  background-color: var(--modal-bg);
+  width: 95%;
+  max-width: 600px;
+  border-radius: 6px;
+  box-shadow: 0 3px 6px var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.modal-header,
+.modal-footer {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--modal-border);
+  display: flex;
+  align-items: center;
+}
+
+.modal-header {
+  justify-content: space-between;
+  border-bottom: 1px solid var(--modal-border);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--modal-border);
+  border-bottom: none;
+}
+
+.modal-body {
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.icon-btn:hover {
+  background-color: var(--action-hover);
+}
+
+/* Dark mode overrides: when .dark-mode is applied to the body element, these
+   CSS variables redefine the colour palette for a comfortable dark theme. */
+.dark-mode {
+  --bg-color: #202124;
+  --text-color: #e8eaed;
+  --header-bg: #2d2e30;
+  --header-border: #5f5f60;
+  --input-bg: #303134;
+  --input-border: #5f6368;
+  --primary-btn-bg: #8ab4f8;
+  --primary-btn-color: #202124;
+  --primary-btn-hover: #669df6;
+  --secondary-btn-bg: #3c4043;
+  --secondary-btn-color: #e8eaed;
+  --secondary-btn-hover: #5f6368;
+  --danger-btn-bg: #f28b82;
+  --danger-btn-color: #202124;
+  --danger-btn-hover: #e57373;
+  --section-title-color: #9aa0a6;
+  --card-bg: #303134;
+  --card-shadow: rgba(0, 0, 0, 0.4);
+  --action-hover: rgba(255, 255, 255, 0.1);
+  --modal-bg: #303134;
+  --modal-border: #5f6368;
+  --backdrop-bg: rgba(0, 0, 0, 0.6);
+
+      /* Override gradient colours for dark mode with more vivid neon hues.
+         These colours complement the dark background while still providing
+         a bright, glowing border. */
+      --input-gradient-start: #f300c0;
+      --input-gradient-end: #00bfff;
+
+  /* Colour for links in dark mode */
+  --link-color: #8ab4f8;
+}
+
+/* Style the drag handle used for reordering notes.  Position it in the top
+   left corner of each note card and use a grab cursor to indicate
+   draggable behaviour.  Increase the icon size slightly for clarity. */
+.drag-handle {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  cursor: grab;
+  color: var(--section-title-color);
+}
+
+.drag-handle i {
+  font-size: 1.1rem;
+}
+
+/* Ensure the icon inside the theme toggle button inherits the
+   appropriate text colour for the current theme. */
+#themeToggleBtn i {
+  color: var(--text-color);
+  /* Increase size slightly so the sun/moon icon aligns visually with
+     other controls. */
+  font-size: 1.2rem;
+}
+
+/* Spacer element to push Save button to right */
+.spacer {
+  flex: 1;
+}
+
+/* -------------------------------------------------------------------------
+   Micromodal styles
+   The view modal uses the Micromodal library to handle accessibility and
+   animations.  Micromodal does not come with its own styles, so we define
+   the overlay and container here.  These styles mirror the existing modal
+   look and feel used elsewhere in the application.
+   ------------------------------------------------------------------------- */
+
+/* Overlay: fills the viewport and dims the background.  The overlay uses
+   flexbox to centre the modal container. */
+.micromodal-slide .modal__overlay {
+  background-color: var(--backdrop-bg);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+/* Container: box that holds the modal's header, body and footer.  The
+   dimensions and visual styling match those of the edit modal. */
+.micromodal-slide .modal__container {
+  background-color: var(--modal-bg);
+  width: 95%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 3px 6px var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+}

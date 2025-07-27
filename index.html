@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Keep</title>
+    <!--
+      A very lightweight version of Google Keep built for the browser.  This
+      single‑page application lets you capture quick thoughts, lists and
+      reminders without the need for a back end or sign‑in.  Notes are
+      persisted in the browser's localStorage so that they survive page
+      reloads.
+
+      The user interface draws inspiration from Google’s Material design and
+      uses modern CSS features to create an adaptive grid for your notes.
+    -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- Import Bootstrap Icons for modern button icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <!-- Include animate.css for subtle micro animations -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css"
+    />
+    <!-- Lightweight modal helper (Micromodal) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/micromodal/dist/micromodal.min.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Simple Keep</h1>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search notes…"
+        aria-label="Search notes"
+      />
+      <!-- Export/import buttons for backing up notes.  Users can download 
+           their data and store it on a cloud provider of their choice (e.g., OneDrive 
+           or Google Drive) and restore it later.  These controls offset hosting costs
+           by eliminating any need for a back‑end. -->
+      <button id="exportNotesBtn" class="secondary-btn" title="Export notes to file">
+        Export
+      </button>
+      <button id="importNotesBtn" class="secondary-btn" title="Import notes from file">
+        Import
+      </button>
+      <!-- hidden file input for importing JSON backups -->
+      <input type="file" id="importFileInput" accept="application/json" style="display:none" />
+
+      <!-- Theme toggle button for switching between light and dark modes -->
+      <button id="themeToggleBtn" class="icon-btn" title="Toggle dark/light mode">
+        <!-- Icon will be set dynamically in script.js based on current theme -->
+      </button>
+    </header>
+
+    <!-- Note creation area -->
+    <section id="noteInput" class="note-input">
+      <input
+        type="text"
+        id="noteTitle"
+        class="note-title"
+        placeholder="Title"
+        aria-label="Note title"
+      />
+      <textarea
+        id="noteContent"
+        class="note-content"
+        placeholder="Take a note…"
+        aria-label="Note content"
+      ></textarea>
+      <div class="input-options">
+        <button id="toggleChecklistBtn" class="secondary-btn" title="Toggle checklist mode">
+          Checklist
+        </button>
+        <div class="color-options" aria-label="Note colour chooser">
+          <!-- Colour buttons are defined in script.js to stay DRY -->
+        </div>
+        <button id="addNoteBtn" class="primary-btn" title="Add note">
+          Add
+        </button>
+      </div>
+      <!-- Container for checklist items when checklist mode is active -->
+      <ul id="checklistContainer" class="checklist-container"></ul>
+    </section>
+
+    <main class="notes-wrapper">
+      <section id="pinnedSection" class="note-section" hidden>
+        <h2 class="section-title">Pinned</h2>
+        <!-- Masonry wrapper for pinned notes -->
+        <div id="pinnedNotes" class="masonry-wrap"></div>
+      </section>
+      <section id="othersSection" class="note-section">
+        <h2 class="section-title">Others</h2>
+        <!-- Masonry wrapper for non‑pinned notes -->
+        <div id="notesContainer" class="masonry-wrap"></div>
+      </section>
+    </main>
+
+    <!-- Modal for editing an existing note -->
+    <div id="editModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header class="modal-header">
+          <h2 id="modalTitle">Edit Note</h2>
+          <button id="closeModalBtn" class="icon-btn" title="Close">
+            ✕
+          </button>
+        </header>
+        <div class="modal-body">
+          <input
+            type="text"
+            id="editTitle"
+            class="note-title"
+            placeholder="Title"
+            aria-label="Edit note title"
+          />
+          <textarea
+            id="editContent"
+            class="note-content"
+            placeholder="Edit your note…"
+            aria-label="Edit note content"
+          ></textarea>
+          <!-- Checklist items for editing, inserted dynamically -->
+          <ul id="editChecklistContainer" class="checklist-container"></ul>
+        </div>
+        <footer class="modal-footer">
+          <button id="deleteNoteBtn" class="danger-btn" title="Delete this note">
+            Delete
+          </button>
+          <div class="spacer"></div>
+          <button id="saveNoteBtn" class="primary-btn" title="Save changes">
+            Save
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- View modal for full note content when "[Read More]" is clicked" using Micromodal -->
+    <div id="noteViewModal" class="micromodal-slide" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+        <div
+          class="modal__container"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="noteViewTitle"
+        >
+          <header class="modal-header">
+            <h2 id="noteViewTitle"></h2>
+            <button
+              id="closeNoteViewBtn"
+              class="icon-btn"
+              data-micromodal-close
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </header>
+          <main id="noteViewBody" class="modal-body"></main>
+          <footer id="noteViewActions" class="modal-footer"></footer>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
