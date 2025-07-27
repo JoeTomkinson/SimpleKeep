@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Keep</title>
+    <!--
+      A very lightweight version of Google Keep built for the browser.  This
+      single‑page application lets you capture quick thoughts, lists and
+      reminders without the need for a back end or sign‑in.  Notes are
+      persisted in the browser's localStorage so that they survive page
+      reloads.
+
+      The user interface draws inspiration from Google’s Material design and
+      uses modern CSS features to create an adaptive grid for your notes.
+    -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Simple Keep</h1>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search notes…"
+        aria-label="Search notes"
+      />
+      <!-- Export/import buttons for backing up notes.  Users can download their data
+           and store it on a cloud provider of their choice (e.g., OneDrive or Google
+           Drive) and restore it later.  These controls offset hosting costs by
+           eliminating any need for a back‑end. -->
+      <button id="exportNotesBtn" class="secondary-btn" title="Export notes to file">
+        Export
+      </button>
+      <button id="importNotesBtn" class="secondary-btn" title="Import notes from file">
+        Import
+      </button>
+      <!-- hidden file input for importing JSON backups -->
+      <input type="file" id="importFileInput" accept="application/json" style="display:none" />
+    </header>
+
+    <!-- Note creation area -->
+    <section id="noteInput" class="note-input">
+      <input
+        type="text"
+        id="noteTitle"
+        class="note-title"
+        placeholder="Title"
+        aria-label="Note title"
+      />
+      <textarea
+        id="noteContent"
+        class="note-content"
+        placeholder="Take a note…"
+        aria-label="Note content"
+      ></textarea>
+      <div class="input-options">
+        <button id="toggleChecklistBtn" class="secondary-btn" title="Toggle checklist mode">
+          Checklist
+        </button>
+        <div class="color-options" aria-label="Note colour chooser">
+          <!-- Colour buttons are defined in script.js to stay DRY -->
+        </div>
+        <button id="addNoteBtn" class="primary-btn" title="Add note">
+          Add
+        </button>
+      </div>
+      <!-- Container for checklist items when checklist mode is active -->
+      <ul id="checklistContainer" class="checklist-container"></ul>
+    </section>
+
+    <main class="notes-wrapper">
+      <section id="pinnedSection" class="note-section" hidden>
+        <h2 class="section-title">Pinned</h2>
+        <div id="pinnedNotes" class="notes-grid"></div>
+      </section>
+      <section id="othersSection" class="note-section">
+        <h2 class="section-title">Others</h2>
+        <div id="notesContainer" class="notes-grid"></div>
+      </section>
+    </main>
+
+    <!-- Modal for editing an existing note -->
+    <div id="editModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <header class="modal-header">
+          <h2 id="modalTitle">Edit Note</h2>
+          <button id="closeModalBtn" class="icon-btn" title="Close">
+            ✕
+          </button>
+        </header>
+        <div class="modal-body">
+          <input
+            type="text"
+            id="editTitle"
+            class="note-title"
+            placeholder="Title"
+            aria-label="Edit note title"
+          />
+          <textarea
+            id="editContent"
+            class="note-content"
+            placeholder="Edit your note…"
+            aria-label="Edit note content"
+          ></textarea>
+          <!-- Checklist items for editing, inserted dynamically -->
+          <ul id="editChecklistContainer" class="checklist-container"></ul>
+        </div>
+        <footer class="modal-footer">
+          <button id="deleteNoteBtn" class="danger-btn" title="Delete this note">
+            Delete
+          </button>
+          <div class="spacer"></div>
+          <button id="saveNoteBtn" class="primary-btn" title="Save changes">
+            Save
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
