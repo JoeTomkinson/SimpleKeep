@@ -48,9 +48,12 @@ body {
   --modal-border: #eee;
   --backdrop-bg: rgba(0, 0, 0, 0.4);
 
-      /* Gradient colours used for the note creation area's border in light mode. */
-      --input-gradient-start: #d2e3fc;
-      --input-gradient-end: #fcefe6;
+      /* Vibrant neon gradient colours used for the note creation area's border in light mode. */
+      /* These colours have been tuned to stand out more prominently than before. */
+      --input-gradient-start: #ff007a;
+      --input-gradient-end: #00eaff;
+      /* Colour used for interactive links such as the Read More indicator. */
+      --link-color: #1a73e8;
 }
 
 /* Layout for the header */
@@ -89,10 +92,15 @@ body {
          transparent border allows the gradient to sit outside the box while
          `border-image` paints the border with the gradient defined via
          CSS variables. */
-      border: 2px solid transparent;
+      border: 3px solid transparent;
       border-image: linear-gradient(45deg, var(--input-gradient-start), var(--input-gradient-end)) 1;
       max-width: 800px;
-      box-shadow: 0 1px 3px var(--card-shadow);
+      /* Apply a more pronounced neon glow around the input area using both ends
+         of the gradient.  Multiple shadows layer together to create a colourful
+         halo effect. */
+      box-shadow:
+        0 0 15px 2px var(--input-gradient-start),
+        0 0 15px 2px var(--input-gradient-end);
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -308,6 +316,16 @@ body {
   background-color: var(--action-hover);
 }
 
+/* Read More link appended to truncated notes */
+.read-more {
+  color: var(--link-color);
+  cursor: pointer;
+  font-weight: 500;
+}
+.read-more:hover {
+  text-decoration: underline;
+}
+
 /* Modal styles */
 .modal {
   display: none;
@@ -412,10 +430,14 @@ body {
   --modal-border: #5f6368;
   --backdrop-bg: rgba(0, 0, 0, 0.6);
 
-      /* Override gradient colours for dark mode.  A deeper palette adds subtle
-         colour without overpowering the dark background. */
-      --input-gradient-start: #4b5563;
-      --input-gradient-end: #373b47;
+      /* Override gradient colours for dark mode with more vivid neon hues.
+         These colours complement the dark background while still providing
+         a bright, glowing border. */
+      --input-gradient-start: #f300c0;
+      --input-gradient-end: #00bfff;
+
+  /* Colour for links in dark mode */
+  --link-color: #8ab4f8;
 }
 
 /* Style the drag handle used for reordering notes.  Position it in the top

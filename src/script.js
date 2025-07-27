@@ -46,6 +46,12 @@
       // Drag state for reordering
       let draggedNoteId = null;
 
+      // Character limit for truncating long note descriptions.  If a note's
+      // content exceeds this length, the card will display a shortened
+      // version followed by a Read More link that opens the full note in
+      // a modal.  Adjust this value to taste.
+      const DESCRIPTION_CHAR_LIMIT = 160;
+
       // DOM references – these variables will be assigned once the DOM has loaded.
       let searchInput;
       let noteTitleInput;
@@ -75,6 +81,14 @@
       let exportNotesBtn;
       let importNotesBtn;
       let importFileInput;
+
+      // View modal elements for "Read More" functionality (assigned after DOM load)
+      let viewModal;
+      let viewModalBackdrop;
+      let closeViewModalBtn;
+      let viewTitleEl;
+      let viewContentEl;
+      let viewNoteActions;
 
       /**
        * Load notes from localStorage.  If nothing is saved yet, use an
@@ -174,23 +188,29 @@
       }
 
       /**
-       * Reorder notes: move dragged note before target note within same pinned section.
+       * Reorder notes by swapping the positions of two notes.  When a note
+       * is dragged onto another note, their positions in the `notes`
+       * array will be exchanged.  Swapping maintains the relative order
+       * of the remaining notes and provides a more intuitive drag
+       * interaction than simply inserting before the target.  Swaps are
+       * only permitted within the same pinned/unpinned group.
+       *
        * @param {string} draggedId ID of the note being dragged
-       * @param {string} targetId ID of the note being dropped onto
+       * @param {string} targetId  ID of the note being dropped onto
        */
       function reorderNotes(draggedId, targetId) {
+        // do nothing if the same card is dragged onto itself
         if (draggedId === targetId) return;
         const draggedIndex = notes.findIndex((n) => n.id === draggedId);
         const targetIndex = notes.findIndex((n) => n.id === targetId);
         if (draggedIndex === -1 || targetIndex === -1) return;
-        const draggedNote = notes[draggedIndex];
-        // only reorder within same pinned status
-        if (notes[targetIndex].pinned !== draggedNote.pinned) return;
-        // remove dragged note
-        notes.splice(draggedIndex, 1);
-        // find new index after removal; target note index may have changed if draggedIndex < targetIndex
-        let newIndex = notes.findIndex((n) => n.id === targetId);
-        notes.splice(newIndex, 0, draggedNote);
+        // enforce swapping only within the same pinned status
+        if (notes[draggedIndex].pinned !== notes[targetIndex].pinned) return;
+        // Swap the two note objects.  This simply exchanges the
+        // positions within the array; note metadata remains unchanged.
+        const tmp = notes[draggedIndex];
+        notes[draggedIndex] = notes[targetIndex];
+        notes[targetIndex] = tmp;
         saveNotes();
         renderNotes();
       }
@@ -259,13 +279,17 @@
           draggedNoteId = note.id;
           e.dataTransfer.effectAllowed = 'move';
         });
-        // allow dropping onto other cards
+        // allow dropping onto other cards.  Prevent the event from bubbling
+        // to parent containers so that dropping directly on a card swaps
+        // positions rather than sending it to the end of the list.
         card.addEventListener('dragover', (e) => {
           e.preventDefault();
           e.dataTransfer.dropEffect = 'move';
+          e.stopPropagation();
         });
         card.addEventListener('drop', (e) => {
           e.preventDefault();
+          e.stopPropagation();
           const targetId = note.id;
           if (draggedNoteId && draggedNoteId !== targetId) {
             reorderNotes(draggedNoteId, targetId);
@@ -303,7 +327,21 @@
         } else {
           const contentDiv = document.createElement('div');
           contentDiv.className = 'note-content-display';
-          contentDiv.textContent = note.content;
+          // For long descriptions, truncate and append a Read More link.
+          if (note.content && note.content.length > DESCRIPTION_CHAR_LIMIT) {
+            const truncated = note.content.slice(0, DESCRIPTION_CHAR_LIMIT).trim() + '… ';
+            contentDiv.textContent = truncated;
+            const readMoreSpan = document.createElement('span');
+            readMoreSpan.className = 'read-more';
+            readMoreSpan.textContent = '[Read More]';
+            readMoreSpan.addEventListener('click', (e) => {
+              e.stopPropagation();
+              openViewModal(note.id);
+            });
+            contentDiv.appendChild(readMoreSpan);
+          } else {
+            contentDiv.textContent = note.content;
+          }
           card.appendChild(contentDiv);
         }
         // Action buttons
@@ -624,6 +662,117 @@
       }
 
       /**
+       * Open the view modal to display the full content of a note.  This
+       * function is invoked when a user clicks the Read More link on a
+       * truncated note.  It populates the modal with the note's title,
+       * content or checklist and builds a fresh set of action buttons
+       * (pin/unpin, colour cycle, edit and delete) that operate on the
+       * underlying note.  The modal can be dismissed by the user via
+       * closeViewModal().
+       * @param {string} noteId Identifier of the note to view
+       */
+      function openViewModal(noteId) {
+        const note = notes.find((n) => n.id === noteId);
+        if (!note) return;
+        // populate title
+        viewTitleEl.textContent = note.title || '';
+        // populate content or checklist
+        viewContentEl.innerHTML = '';
+        if (note.checklist) {
+          const ul = document.createElement('ul');
+          ul.className = 'note-list';
+          note.items.forEach((item) => {
+            const li = document.createElement('li');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = !!item.checked;
+            checkbox.disabled = true;
+            const span = document.createElement('span');
+            span.textContent = item.text;
+            if (item.checked) span.style.textDecoration = 'line-through';
+            li.appendChild(checkbox);
+            li.appendChild(span);
+            ul.appendChild(li);
+          });
+          viewContentEl.appendChild(ul);
+        } else {
+          // plain text note; preserve whitespace
+          const p = document.createElement('p');
+          p.textContent = note.content;
+          viewContentEl.appendChild(p);
+        }
+        // build action buttons
+        viewNoteActions.innerHTML = '';
+        // Pin/unpin
+        const pinBtn = document.createElement('button');
+        pinBtn.title = note.pinned ? 'Unpin' : 'Pin';
+        pinBtn.innerHTML = note.pinned
+          ? '<i class="bi bi-pin-angle-fill"></i>'
+          : '<i class="bi bi-pin-angle"></i>';
+        pinBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          note.pinned = !note.pinned;
+          saveNotes();
+          renderNotes();
+          // refresh the modal to update the icon
+          openViewModal(noteId);
+        });
+        viewNoteActions.appendChild(pinBtn);
+        // Colour cycle
+        const colourBtn = document.createElement('button');
+        colourBtn.title = 'Change colour';
+        colourBtn.innerHTML = '<i class="bi bi-palette"></i>';
+        colourBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = COLORS.indexOf(note.color || COLORS[0]);
+          const nextCol = COLORS[(idx + 1) % COLORS.length];
+          note.color = nextCol;
+          saveNotes();
+          renderNotes();
+          openViewModal(noteId);
+        });
+        viewNoteActions.appendChild(colourBtn);
+        // Edit button
+        const editBtn = document.createElement('button');
+        editBtn.title = 'Edit note';
+        editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+        editBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeViewModal();
+          openEditModal(noteId);
+        });
+        viewNoteActions.appendChild(editBtn);
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.title = 'Delete note';
+        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm('Delete this note?')) {
+            deleteNoteById(noteId);
+            closeViewModal();
+          }
+        });
+        viewNoteActions.appendChild(deleteBtn);
+        // show the modal
+        viewModal.classList.add('show');
+        viewModal.setAttribute('aria-hidden', 'false');
+      }
+
+      /**
+       * Close the view modal and clear its contents.
+       */
+      function closeViewModal() {
+        if (!viewModal) return;
+        viewModal.classList.remove('show');
+        viewModal.setAttribute('aria-hidden', 'true');
+        // clear title and content
+        viewTitleEl.textContent = '';
+        viewContentEl.innerHTML = '';
+        viewNoteActions.innerHTML = '';
+      }
+
+      /**
        * Delete a note by ID and refresh the display.
        * @param {string} id Note identifier
        */
@@ -755,6 +904,17 @@
         closeModalBtn.addEventListener('click', () => {
           closeEditModal();
         });
+
+        // View modal close handlers for Read More.  Dismiss the view modal
+        // when the backdrop or close button are clicked.
+        if (viewModalBackdrop && closeViewModalBtn) {
+          viewModalBackdrop.addEventListener('click', () => {
+            closeViewModal();
+          });
+          closeViewModalBtn.addEventListener('click', () => {
+            closeViewModal();
+          });
+        }
         // Delete note via modal
         deleteNoteBtn.addEventListener('click', () => {
           if (editNoteId && confirm('Delete this note?')) {
@@ -868,6 +1028,14 @@
           exportNotesBtn = document.getElementById('exportNotesBtn');
           importNotesBtn = document.getElementById('importNotesBtn');
           importFileInput = document.getElementById('importFileInput');
+
+          // view modal references for read more
+          viewModal = document.getElementById('viewModal');
+          viewModalBackdrop = document.getElementById('viewModalBackdrop');
+          closeViewModalBtn = document.getElementById('closeViewModalBtn');
+          viewTitleEl = document.getElementById('viewTitle');
+          viewContentEl = document.getElementById('viewContent');
+          viewNoteActions = document.getElementById('viewNoteActions');
           // theme toggle
           themeToggleBtn = document.getElementById('themeToggleBtn');
           // now initialise colour buttons and event listeners
