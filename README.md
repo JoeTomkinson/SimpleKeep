@@ -22,7 +22,7 @@
 1. Download or clone this repository.
 2. Open `index.html` in your browser.
 
-That’s it — everything runs client-side.
+That’s it; everything runs client-side.
 
 ---
 
