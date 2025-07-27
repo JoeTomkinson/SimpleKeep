@@ -1,10 +1,10 @@
 /*
- * Stylesheet for Simple Keep
- *
- * This file defines the look and feel of the note‑taking
- * application.  Care has been taken to keep the design
- * lightweight and accessible while still being attractive.
- */
+     * Stylesheet for Simple Keep
+     *
+     * This file defines the look and feel of the note‑taking
+     * application.  Care has been taken to keep the design
+     * lightweight and accessible while still being attractive.
+     */
 
 /* CSS reset to remove default margins and paddings */
 * {
@@ -18,8 +18,35 @@ body {
   height: 100%;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Theme variables: define default (light) values.  Dark mode overrides are
+   defined at the bottom of the file within the .dark-mode selector. */
+:root {
+  --bg-color: #f5f5f5;
+  --text-color: #333;
+  --header-bg: #ffffff;
+  --header-border: #e0e0e0;
+  --input-bg: #ffffff;
+  --input-border: #ddd;
+  --primary-btn-bg: #1a73e8;
+  --primary-btn-color: #ffffff;
+  --primary-btn-hover: #155cb0;
+  --secondary-btn-bg: #e8eaed;
+  --secondary-btn-color: #333;
+  --secondary-btn-hover: #d7d9db;
+  --danger-btn-bg: #e53935;
+  --danger-btn-color: #ffffff;
+  --danger-btn-hover: #b61823;
+  --section-title-color: #5f6368;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.15);
+  --action-hover: rgba(0, 0, 0, 0.05);
+  --modal-bg: #ffffff;
+  --modal-border: #eee;
+  --backdrop-bg: rgba(0, 0, 0, 0.4);
 }
 
 /* Layout for the header */
@@ -27,12 +54,12 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: #ffffff;
+  background-color: var(--header-bg);
   padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--header-border);
 }
 
 .app-header h1 {
@@ -43,29 +70,29 @@ body {
 .app-header input[type='text'] {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 1rem;
 }
 
 /* Input section for creating notes */
 .note-input {
-  background-color: #ffffff;
+  background-color: var(--input-bg);
   margin: 1rem auto;
   padding: 1rem;
   border-radius: 6px;
   max-width: 800px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px var(--card-shadow);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
 .note-input .note-title,
-.note-input .note-content {
+  .note-input .note-content {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 1rem;
 }
@@ -98,30 +125,30 @@ body {
 }
 
 .primary-btn {
-  background-color: #1a73e8;
-  color: #ffffff;
+  background-color: var(--primary-btn-bg);
+  color: var(--primary-btn-color);
 }
 
 .primary-btn:hover {
-  background-color: #155cb0;
+  background-color: var(--primary-btn-hover);
 }
 
 .secondary-btn {
-  background-color: #e8eaed;
-  color: #333;
+  background-color: var(--secondary-btn-bg);
+  color: var(--secondary-btn-color);
 }
 
 .secondary-btn:hover {
-  background-color: #d7d9db;
+  background-color: var(--secondary-btn-hover);
 }
 
 .danger-btn {
-  background-color: #e53935;
-  color: #fff;
+  background-color: var(--danger-btn-bg);
+  color: var(--danger-btn-color);
 }
 
 .danger-btn:hover {
-  background-color: #b61823;
+  background-color: var(--danger-btn-hover);
 }
 
 /* Colour palette chooser */
@@ -183,7 +210,7 @@ body {
 .section-title {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
-  color: #5f6368;
+  color: var(--section-title-color);
 }
 
 /* Grid layout for notes */
@@ -195,10 +222,10 @@ body {
 
 /* Individual note card */
 .note-card {
-  background-color: #fff;
+  background-color: var(--card-bg);
   border-radius: 6px;
   padding: 0.75rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 2px var(--card-shadow);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -209,7 +236,7 @@ body {
 }
 
 .note-card[data-pinned='true']::before {
-  content: '\1F4CC'; /* paperclip emoji as a pin indicator */
+  content: '\\1F4CC'; /* paperclip emoji as a pin indicator */
   position: absolute;
   top: 6px;
   right: 6px;
@@ -255,9 +282,15 @@ body {
   padding: 0.25rem;
   border-radius: 4px;
 }
+/* Style Bootstrap icons inside action buttons.  Increase the
+   icon size slightly and vertically align to match text baseline. */
+.note-actions button i {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
 
 .note-actions button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--action-hover);
 }
 
 /* Modal styles */
@@ -283,16 +316,16 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--backdrop-bg);
 }
 
 .modal-content {
   position: relative;
-  background-color: #fff;
+  background-color: var(--modal-bg);
   width: 95%;
   max-width: 600px;
   border-radius: 6px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 6px var(--card-shadow);
   display: flex;
   flex-direction: column;
   max-height: 90vh;
@@ -302,18 +335,18 @@ body {
 .modal-header,
 .modal-footer {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--modal-border);
   display: flex;
   align-items: center;
 }
 
 .modal-header {
   justify-content: space-between;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--modal-border);
 }
 
 .modal-footer {
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--modal-border);
   border-bottom: none;
 }
 
@@ -335,7 +368,49 @@ body {
 }
 
 .icon-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--action-hover);
+}
+
+/* Dark mode overrides: when .dark-mode is applied to the body element, these
+   CSS variables redefine the colour palette for a comfortable dark theme. */
+.dark-mode {
+  --bg-color: #202124;
+  --text-color: #e8eaed;
+  --header-bg: #2d2e30;
+  --header-border: #5f5f60;
+  --input-bg: #303134;
+  --input-border: #5f6368;
+  --primary-btn-bg: #8ab4f8;
+  --primary-btn-color: #202124;
+  --primary-btn-hover: #669df6;
+  --secondary-btn-bg: #3c4043;
+  --secondary-btn-color: #e8eaed;
+  --secondary-btn-hover: #5f6368;
+  --danger-btn-bg: #f28b82;
+  --danger-btn-color: #202124;
+  --danger-btn-hover: #e57373;
+  --section-title-color: #9aa0a6;
+  --card-bg: #303134;
+  --card-shadow: rgba(0, 0, 0, 0.4);
+  --action-hover: rgba(255, 255, 255, 0.1);
+  --modal-bg: #303134;
+  --modal-border: #5f6368;
+  --backdrop-bg: rgba(0, 0, 0, 0.6);
+}
+
+/* Style the drag handle used for reordering notes.  Position it in the top
+   left corner of each note card and use a grab cursor to indicate
+   draggable behaviour.  Increase the icon size slightly for clarity. */
+.drag-handle {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  cursor: grab;
+  color: var(--section-title-color);
+}
+
+.drag-handle i {
+  font-size: 1.1rem;
 }
 
 /* Spacer element to push Save button to right */
