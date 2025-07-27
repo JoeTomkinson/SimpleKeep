@@ -47,6 +47,10 @@ body {
   --modal-bg: #ffffff;
   --modal-border: #eee;
   --backdrop-bg: rgba(0, 0, 0, 0.4);
+
+      /* Gradient colours used for the note creation area's border in light mode. */
+      --input-gradient-start: #d2e3fc;
+      --input-gradient-end: #fcefe6;
 }
 
 /* Layout for the header */
@@ -77,15 +81,21 @@ body {
 
 /* Input section for creating notes */
 .note-input {
-  background-color: var(--input-bg);
-  margin: 1rem auto;
-  padding: 1rem;
-  border-radius: 6px;
-  max-width: 800px;
-  box-shadow: 0 1px 3px var(--card-shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+      background-color: var(--input-bg);
+      margin: 1rem auto;
+      padding: 1rem;
+      border-radius: 6px;
+      /* Apply a colourful gradient border using CSS border-image.  The
+         transparent border allows the gradient to sit outside the box while
+         `border-image` paints the border with the gradient defined via
+         CSS variables. */
+      border: 2px solid transparent;
+      border-image: linear-gradient(45deg, var(--input-gradient-start), var(--input-gradient-end)) 1;
+      max-width: 800px;
+      box-shadow: 0 1px 3px var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
 }
 
 .note-input .note-title,
@@ -290,6 +300,8 @@ body {
 .note-actions button i {
   font-size: 1.2rem;
   vertical-align: middle;
+  /* Match icon colour to text colour so icons remain visible in dark mode */
+  color: var(--text-color);
 }
 
 .note-actions button:hover {
@@ -399,6 +411,11 @@ body {
   --modal-bg: #303134;
   --modal-border: #5f6368;
   --backdrop-bg: rgba(0, 0, 0, 0.6);
+
+      /* Override gradient colours for dark mode.  A deeper palette adds subtle
+         colour without overpowering the dark background. */
+      --input-gradient-start: #4b5563;
+      --input-gradient-end: #373b47;
 }
 
 /* Style the drag handle used for reordering notes.  Position it in the top
