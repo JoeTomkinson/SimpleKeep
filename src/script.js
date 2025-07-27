@@ -227,7 +227,20 @@
       function createNoteCard(note, container) {
         const card = document.createElement('div');
         card.classList.add('note-card');
-        card.style.backgroundColor = note.color || '#fff';
+        // Determine note background and accent colour.  In dark mode
+        // individual note colours can be overwhelming against a dark
+        // canvas.  In that case fall back to the shared card background
+        // and use the note colour as a left border accent instead.
+        const isDark = document.body.classList.contains('dark-mode');
+        if (isDark) {
+          card.style.backgroundColor = '';
+          if (note.color) {
+            card.style.borderLeft = `6px solid ${note.color}`;
+          }
+        } else {
+          card.style.backgroundColor = note.color || '#fff';
+          card.style.borderLeft = '';
+        }
         card.dataset.id = note.id;
         card.dataset.pinned = note.pinned;
 
@@ -346,10 +359,8 @@
         actions.appendChild(deleteBtn);
 
         card.appendChild(actions);
-        // Clicking anywhere on card except buttons opens edit
-        card.addEventListener('click', () => {
-          openEditModal(note.id);
-        });
+        // Do not open the edit modal when clicking on the card itself.  The
+        // edit button provides the only entry point for editing.
         container.appendChild(card);
       }
 
@@ -820,6 +831,8 @@
           const newTheme = currentDark ? 'light' : 'dark';
           applyTheme(newTheme);
           localStorage.setItem('simpleKeepTheme', newTheme);
+          // re-render notes so their backgrounds and accents update with the new theme
+          renderNotes();
         });
       }
 

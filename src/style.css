@@ -95,6 +95,8 @@ body {
   border: 1px solid var(--input-border);
   border-radius: 4px;
   font-size: 1rem;
+  background-color: var(--input-bg);
+  color: var(--text-color);
 }
 
 /* Textarea specific styling */
@@ -224,7 +226,10 @@ body {
 .note-card {
   background-color: var(--card-bg);
   border-radius: 6px;
-  padding: 0.75rem;
+  /* Set explicit four‑value padding: top, right, bottom, left.  The left
+     padding is increased to leave space for the drag handle so that the
+     title text does not overlap the grip icon. */
+  padding: 0.75rem 0.75rem 0.75rem 1.75rem;
   box-shadow: 0 1px 2px var(--card-shadow);
   display: flex;
   flex-direction: column;
@@ -233,15 +238,13 @@ body {
   min-height: 80px;
   word-wrap: break-word;
   white-space: pre-wrap;
+
+  /* The increased left padding above already reserves space for the drag
+     handle; remove the separate padding-left property. */
 }
 
-.note-card[data-pinned='true']::before {
-  content: '\\1F4CC'; /* paperclip emoji as a pin indicator */
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  font-size: 1.1rem;
-}
+/* Removed the old ::before pin indicator.  The pin state is now
+   communicated via a button in the note actions. */
 
 .note-card .note-title-display {
   font-weight: 600;
@@ -411,6 +414,15 @@ body {
 
 .drag-handle i {
   font-size: 1.1rem;
+}
+
+/* Ensure the icon inside the theme toggle button inherits the
+   appropriate text colour for the current theme. */
+#themeToggleBtn i {
+  color: var(--text-color);
+  /* Increase size slightly so the sun/moon icon aligns visually with
+     other controls. */
+  font-size: 1.2rem;
 }
 
 /* Spacer element to push Save button to right */
