@@ -85,25 +85,23 @@ body {
 /* Input section for creating notes */
 .note-input {
       background-color: var(--input-bg);
-      margin: 1rem auto;
+      margin: 2rem auto;
       padding: 1rem;
-      border-radius: 6px;
+      border-radius: 5px;
       /* Apply a colourful gradient border using CSS border-image.  The
          transparent border allows the gradient to sit outside the box while
          `border-image` paints the border with the gradient defined via
          CSS variables. */
-      border: 3px solid transparent;
+      border: 1px solid transparent;
       border-image: linear-gradient(45deg, var(--input-gradient-start), var(--input-gradient-end)) 1;
       max-width: 800px;
       /* Apply a more pronounced neon glow around the input area using both ends
          of the gradient.  Multiple shadows layer together to create a colourful
          halo effect. */
-      box-shadow:
-        0 0 15px 2px var(--input-gradient-start),
-        0 0 15px 2px var(--input-gradient-end);
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      box-shadow: 0 0 10px rgba(255, 0, 122, 0.5), 0 0 20px rgba(0, 234, 255, 0.5);
 }
 
 .note-input .note-title,
